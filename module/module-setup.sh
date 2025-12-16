@@ -1,0 +1,22 @@
+
+check() {
+    require_binaries umoci || return 1
+    # This module should always be explicitly included
+    return 255
+}
+
+depends() {
+    # Use img-lib from builtin modules to handle oci-archive files
+    # They are just tarballs really
+    echo "network img-lib url-lib bash"
+}
+
+install() {
+    inst_binary umoci
+    inst_hook cmdline 30 "$moddir/parse-bootc-live.sh"
+    inst_script "$moddir/bootclivenetroot.sh" "/sbin/bootclivenetroot"
+    if dracut_module_included "systemd-initrd"; then
+        inst_script "$moddir/bootc-live-generator.sh" "$systemdutildir"/system-generators/bootc-live-generator
+    fi
+    dracut_need_initqueue
+}
