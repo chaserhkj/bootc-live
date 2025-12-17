@@ -1,8 +1,11 @@
 # Base bootc image for everything
-base := "quay.io/fedora/fedora-coreos:stable"
+base := "localhost/coreos-test"
 podman := require("podman")
 skopeo := require("skopeo")
 modules := justfile_directory() / "module.d"
+
+build-test-container:
+    {{podman}} build -f Containerfile -t "localhost/coreos-test" {{justfile_directory()}}
 
 # Build initrd with bootc-live dracut module, save to $PWD/initrd.img
 build-initrd: 
