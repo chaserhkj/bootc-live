@@ -5,7 +5,7 @@ kver=$(basename /usr/lib/modules/*)
 
 case $1 in
     build-initrd)
-    dracut --kver $kver -L 4 -a bootc-live /work/initrd.img
+    dracut --kver $kver -L 4 -a bootc-live --force /work/initrd.img
     ;;
     copy-kernel)
     cp -f /usr/lib/modules/$kver/vmlinuz /work/kernel.img
