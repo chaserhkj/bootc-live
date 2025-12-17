@@ -23,7 +23,7 @@ _volume_flags := \
     f'-v {{modules/"99bootc-live"}}:/usr/lib/dracut/modules.d/99bootc-live '+\
     f'-v {{invocation_directory()}}:/work '
 
-# Runs command as interpreted by sh in the base image
+# Runs command in the base image
 _run +CMDS:
     {{podman}} run --rm -it --entrypoint "" \
         {{_volume_flags}} {{base}} {{CMDS}}
