@@ -2,7 +2,6 @@
 # Unpacks and mounts a rootfs from an oci archive
 
 type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
-command -v unpack_archive > /dev/null || . /lib/img-lib.sh
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -17,7 +16,7 @@ imgfile=$1
 # Extract oci image from archive
 image_dir=/run/initramfs/bootc-img
 mkdir -p $image_dir
-unpack_archive $imgfile $image_dir || { warn "failed to unpack oci-archive file $imgfile"; exit 1; }
+tar -C $image_dir -xf $imgfile || { warn "failed to unpack oci-archive file $imgfile"; exit 1; }
 
 # Use umoci to extract runtime oci bundle from oci image
 bundle_dir=/run/initramfs/bootc-bundle
