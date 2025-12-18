@@ -4,6 +4,7 @@ podman := require("podman")
 skopeo := require("skopeo")
 cpio := require("cpio")
 qemu := require("sudo") + " " + require("qemu-system-x86_64")
+gzip := require("gzip")
 modules := justfile_directory() / "module.d"
 
 default: build-full-img copy-kernel
@@ -25,7 +26,7 @@ build-rootfs-oci:
 
 # Create $PWD/rootfs.img, which is root.oci wrapped in cpio
 build-rootfs-img: build-rootfs-oci
-    cd {{justfile_directory()}} && echo root.oci | {{cpio}} -vo -R root:root --format=newc > rootfs.img
+    cd {{justfile_directory()}} && echo root.oci | {{cpio}} -vo -R root:root --format=newc | gzip -9 > rootfs.img
 
 # Create $PWD/initrd-full.img which is initrd.img combined with rootfs.img
 build-full-img: build-initrd build-rootfs-img
