@@ -25,7 +25,7 @@ build-rootfs-oci:
 
 # Create $PWD/rootfs.img, which is root.oci wrapped in cpio
 build-rootfs-img: build-rootfs-oci
-    cd {{justfile_directory()}} && echo root.oci | {{cpio}} -o -R root:root > rootfs.img
+    cd {{justfile_directory()}} && echo root.oci | {{cpio}} -vo -R root:root --format=newc > rootfs.img
 
 # Create $PWD/initrd-full.img which is initrd.img combined with rootfs.img
 build-full-img: build-initrd build-rootfs-img
