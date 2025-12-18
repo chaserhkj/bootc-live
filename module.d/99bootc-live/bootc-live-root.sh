@@ -11,16 +11,18 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin
 # TODO: support loading oci archive file from local block devices
 imgfile=$1
 [ -z $imgfile ] && imgfile=/root.oci
-[ -f $imgfile ] || exit 1
+[ -f $imgfile ] || { warn "oci-archive file $imgfile does not exist"; exit 1; }
 
 # Extract oci image from archive
 image_dir=/run/initramfs/bootc-img
 mkdir -p $image_dir
+info "Unpacking oci image from archive file"
 tar -C $image_dir -xf $imgfile || { warn "failed to unpack oci-archive file $imgfile"; exit 1; }
 
 # Use umoci to extract runtime oci bundle from oci image
 bundle_dir=/run/initramfs/bootc-bundle
 mkdir -p $bundle_dir
+info "Unpacking oci bundle from oci image"
 umoci unpack --image $image_dir:$bootclabel $bundle_dir || { warn "failed to unpack oci-img into runtime bundle"; exit 1; }
 
 # Prepare rootfs for mounting
@@ -33,6 +35,10 @@ mount --bind -o ro,shared $bundle_dir/rootfs $rootfs_dir
 # Mount var and etc read-write
 mount --bind $bundle_dir/rootfs/var $rootfs_dir/var
 mount --bind $bundle_dir/rootfs/etc $rootfs_dir/etc
+
+# Clean up to free memory
+rm -rf $image_dir
+rm -f $imgfile
 
 if [ -z "$DRACUT_SYSTEMD" ]; then
     printf 'mount -o rbind,slave,shared %s %s\n' "$rootfs_dir" "$NEWROOT" > "$hookdir"/mount/01-$$-bootc-live.sh
