@@ -13,6 +13,9 @@ imgfile=$1
 [ -z $imgfile ] && imgfile=/root.oci
 [ -f $imgfile ] || { warn "oci-archive file $imgfile does not exist"; exit 1; }
 
+oci_label=$2
+[ -z $oci_label ] && oci_label=latest
+
 # Extract oci image from archive
 image_dir=/run/initramfs/bootc-img
 mkdir -p $image_dir
@@ -23,7 +26,7 @@ tar -C $image_dir -xf $imgfile || { warn "failed to unpack oci-archive file $img
 bundle_dir=/run/initramfs/bootc-bundle
 mkdir -p $bundle_dir
 info "Unpacking oci bundle from oci image"
-umoci unpack --image $image_dir:$bootclabel $bundle_dir || { warn "failed to unpack oci-img into runtime bundle"; exit 1; }
+umoci unpack --image $image_dir:$oci_label $bundle_dir || { warn "failed to unpack oci-img into runtime bundle"; exit 1; }
 
 # Prepare rootfs for mounting
 rootfs_dir=/run/bootc-live

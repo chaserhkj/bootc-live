@@ -44,4 +44,4 @@ while [ "$i" -le "$RETRIES" ]; do
     i=$((i + 1))
 done > /tmp/bootclivenet.downloaded
 
-exec /sbin/bootc-live-root "$imgfile"
+exec /sbin/bootc-live-root "$imgfile" "$bootclabel"
