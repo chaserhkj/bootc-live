@@ -8,7 +8,6 @@
 
 str_starts "$root" "bootc-live:/" || return
 
-root="bootclive" # quiet complaints from init
 # shellcheck disable=SC2034
 rootok=1
 wait_for_dev -n /dev/root
