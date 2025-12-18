@@ -1,5 +1,5 @@
 #!/bin/sh
-# bootc live images - bootc oci archives specified like
+# bootc live images - bootc oci archives from network specified like
 # root=bootc-live:[url-to-backing-file]
 
 [ -z "$root" ] && root=$(getarg root=)

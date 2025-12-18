@@ -25,20 +25,14 @@ umoci unpack --image $image_dir:$bootclabel $bundle_dir || { warn "failed to unp
 
 # Prepare rootfs for mounting
 rootfs_dir=/run/bootc-live
-var_dir=/run/ephemeral/var
-etc_dir=/run/ephemeral/etc
-mkdir -p $rootfs_dir $var_dir $etc_dir
+mkdir -p $rootfs_dir
 
 # Mount rootfs read-only
 mount --bind -o ro,shared $bundle_dir/rootfs $rootfs_dir
 
-# Simulate bootc/ostree behavior and copy over initial var structure
-cp -a $rootfs_dir/var/. $var_dir
-mount --bind $var_dir $rootfs_dir/var
-
-# Same for etc
-cp -a $rootfs_dir/etc/. $etc_dir
-mount --bind $etc_dir $rootfs_dir/etc
+# Mount var and etc read-write
+mount --bind $bundle_dir/rootfs/var $rootfs_dir/var
+mount --bind $bundle_dir/rootfs/etc $rootfs_dir/etc
 
 if [ -z "$DRACUT_SYSTEMD" ]; then
     printf 'mount -o rbind,slave,shared %s %s\n' "$rootfs_dir" "$NEWROOT" > "$hookdir"/mount/01-$$-bootc-live.sh

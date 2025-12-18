@@ -11,7 +11,7 @@ depends() {
 }
 
 install() {
-    inst_hook cmdline 30 "$moddir/parse-bootc-live.sh"
+    inst_hook cmdline 30 "$moddir/parse-bootc-live-net.sh"
     inst_script "$moddir/bootclivenetroot.sh" "/sbin/bootclivenetroot"
     if dracut_module_included "systemd-initrd"; then
         inst_script "$moddir/bootc-live-net-generator.sh" "$systemdutildir"/system-generators/bootc-live-net-generator
