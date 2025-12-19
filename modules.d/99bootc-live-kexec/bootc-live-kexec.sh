@@ -6,10 +6,10 @@ kargs="$1"
 # Should be mounted by bootc-live
 rootfs=/run/bootc-live
 # Determine the kver for the bootc image
-kver=$rootfs/usr/lib/modules/*
-# If multiple kvers are present, this selects the last one
+kver=( $rootfs/usr/lib/modules/* )
+# If multiple kvers are present, this selects the first one
 # Per bootc specification bootc image SHOULD only have one kernel so this is not a problem
-kver=${kver##*/}
+kver=${kver[0]##*/}
 
 # Locations specified by bootc
 kernel_img=$rootfs/usr/lib/modules/$kver/vmlinuz
