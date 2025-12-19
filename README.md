@@ -24,6 +24,12 @@ Not all bootc images are suitable for live boot, some parts would need tweak to 
 
 See [Containerfile.live](Containerfile.live) for an example of live-bootable fedora bootc image.
 
+### Notes on Fedora CoreOS (FCOS) Images
+
+While FCOS container images like `quay.io/fedora/fedora-coreos:stable` are bootc-compatible, using these together with this project will NOT give you an live system equivalent to a CoreOS live system. This is because on top of a dracut-generated initramfs, FCOS does a lot of extended stuff through [coreos-assembler](https://github.com/coreos/coreos-assembler) and [osbuild](https://github.com/osbuild/osbuild) to handle iso image, ignition, etc.  (see [this file](https://github.com/osbuild/osbuild/blob/f295fc5489eb47d22f97408c33e5a4e7c11e1cd1/stages/org.osbuild.coreos.live-artifacts.mono) for details)
+
+However you can still make these images work through some modifications mentioned above. But `fedora-bootc` might be a leaner and better starting point if you need to do the mods anyways.
+
 ## Try it out
 
 Try it out via `just` recipes:
