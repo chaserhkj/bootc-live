@@ -31,6 +31,10 @@ build-initrd-net:
 build-initrd-registry:
     just _run /bin/sh /work/for-container.sh build-initrd-registry
 
+# Build initrd with all bootc-live modules, save to $PWD/initrd-all-mods.img
+build-initrd-all-mods:
+    just _run /bin/sh /work/for-container.sh build-initrd-registry
+
 # Copy kernel image from bootc image to $PWD/kernel.img
 copy-kernel: 
     just _run /bin/sh /work/for-container.sh copy-kernel
@@ -61,6 +65,7 @@ _volume_flags := \
     f'-v {{modules/"98bootc-live-net"}}:/usr/lib/dracut/modules.d/98bootc-live-net '+\
     f'-v {{modules/"98bootc-live-registry"}}:/usr/lib/dracut/modules.d/98bootc-live-registry '+\
     f'-v {{modules/"99bootc-live"}}:/usr/lib/dracut/modules.d/99bootc-live '+\
+    f'-v {{modules/"99bootc-live-kexec"}}:/usr/lib/dracut/modules.d/99bootc-live-kexec '+\
     f'-v {{invocation_directory()}}:/work '
 
 # Runs command in the builder image

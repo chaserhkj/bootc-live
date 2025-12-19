@@ -8,10 +8,13 @@ case $1 in
     dracut --kver $kver -L 4 -a bootc-live --gzip --force /work/initrd.img
     ;;
     build-initrd-net)
-    dracut --kver $kver -L 4 -a "bootc-live bootc-live-net" --gzip --force /work/initrd-net.img
+    dracut --kver $kver -L 4 -a "bootc-live bootc-live-net bootc-live-kexec" --gzip --force /work/initrd-net.img
     ;;
     build-initrd-registry)
-    dracut --kver $kver -L 4 -a "bootc-live bootc-live-registry" --gzip --force /work/initrd-registry.img
+    dracut --kver $kver -L 4 -a "bootc-live bootc-live-registry bootc-live-kexec" --gzip --force /work/initrd-registry.img
+    ;;
+    build-initrd-all-mods)
+    dracut --kver $kver -L 4 -a "bootc-live bootc-live-net bootc-live-registry bootc-live-kexec" --gzip --force /work/initrd-all-mods.img
     ;;
     copy-kernel)
     cp -f /usr/lib/modules/$kver/vmlinuz /work/kernel.img
