@@ -2,5 +2,12 @@
 FROM quay.io/fedora/fedora-bootc:latest
 
 # SELinux is disabled by default for all fedora live systems
-# We should disable it here as well
+# We should disable it here as well to make everything work
 RUN sed -i 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/selinux/config
+
+# bootloader update really makes no sense in a live system
+RUN systemctl disable bootloader-update.service
+
+# Create a user "liveuser" without password, and configure sudo for it
+RUN useradd -m liveuser && passwd -d liveuser && \
+    echo 'liveuser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/99liveuser.conf
