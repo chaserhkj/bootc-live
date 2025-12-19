@@ -5,8 +5,7 @@ check() {
 }
 
 depends() {
-    # Use img-lib from builtin modules to handle oci-archive files
-    # They are just tarballs really
+    # Use url-lib to fetch remote images from URLs
     echo "network url-lib bootc-live bash"
 }
 

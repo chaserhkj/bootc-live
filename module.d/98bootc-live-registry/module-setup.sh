@@ -6,9 +6,8 @@ check() {
 }
 
 depends() {
-    # Use img-lib from builtin modules to handle oci-archive files
-    # They are just tarballs really
-    echo "network bootc-live bash"
+    # Need url-lib to populate the cert store for skopeo
+    echo "network url-lib bootc-live bash"
 }
 
 install() {
