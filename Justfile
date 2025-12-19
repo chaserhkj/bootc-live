@@ -7,7 +7,7 @@ skopeo := require("skopeo")
 cpio := require("cpio")
 qemu := require("sudo") + " " + require("qemu-system-x86_64")
 gzip := require("gzip")
-modules := justfile_directory() / "module.d"
+modules := justfile_directory() / "modules.d"
 
 default: build-full-img copy-kernel
 
