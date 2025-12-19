@@ -23,6 +23,10 @@ build-live-container-img:
 build-initrd: 
     just _run /bin/sh /work/for-container.sh build-initrd
 
+# Build initrd with bootc-live-net dracut module, save to $PWD/initrd.img
+build-initrd-net:
+    just _run /bin/sh /work/for-container.sh build-initrd-net
+
 # Copy kernel image from bootc image to $PWD/kernel.img
 copy-kernel: 
     just _run /bin/sh /work/for-container.sh copy-kernel
