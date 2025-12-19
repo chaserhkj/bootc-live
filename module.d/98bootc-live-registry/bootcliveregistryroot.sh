@@ -22,7 +22,7 @@ while [ "$i" -le "$RETRIES" ]; do
     if getargbool 0 bootc.registry.unsecure; then
         skopeo --insecure-policy copy --src-tls-verify=false docker://"$image_tag" oci-archive:$img_path:$oci_archive_tag
     else
-        skopeo copy docker://"$image_tag" oci-archive:$img_path:$oci_archive_tag
+        skopeo --insecure-policy copy docker://"$image_tag" oci-archive:$img_path:$oci_archive_tag
     fi
 
     # shellcheck disable=SC2181
@@ -30,7 +30,7 @@ while [ "$i" -le "$RETRIES" ]; do
         warn "failed to download oci live image: error $?"
     fi
 
-    if [ -n "$imgfile" -a -s "$imgfile" ]; then
+    if [ -n "$img_path" -a -s "$img_path" ]; then
         break
     else
         if [ $i -ge "$RETRIES" ]; then
@@ -44,4 +44,4 @@ while [ "$i" -le "$RETRIES" ]; do
     i=$((i + 1))
 done > /tmp/bootcliveregistry.downloaded
 
-exec /sbin/bootc-live-root "$imgfile" "$oci_archive_tag"
+exec /sbin/bootc-live-root "$img_path" "$oci_archive_tag"
