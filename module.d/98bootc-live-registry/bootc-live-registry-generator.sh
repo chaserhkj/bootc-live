@@ -7,27 +7,7 @@ type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
 [ "${root%%:*}" = "bootc-live" ] || exit 0
 
 case "$root" in
-    bootc-live:nfs://*)
-        root="${root#bootc-live:}"
-        rootok=1
-        ;;
-    bootc-live:http://*)
-        root="${root#bootc-live:}"
-        rootok=1
-        ;;
-    bootc-live:https://*)
-        root="${root#bootc-live:}"
-        rootok=1
-        ;;
-    bootc-live:ftp://*)
-        root="${root#bootc-live:}"
-        rootok=1
-        ;;
-    bootc-live:torrent://*)
-        root="${root#bootc-live:}"
-        rootok=1
-        ;;
-    bootc-live:tftp://*)
+    bootc-live:docker://*)
         root="${root#bootc-live:}"
         rootok=1
         ;;

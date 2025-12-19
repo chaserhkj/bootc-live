@@ -27,6 +27,10 @@ build-initrd:
 build-initrd-net:
     just _run /bin/sh /work/for-container.sh build-initrd-net
 
+# Build initrd with bootc-live-registry dracut module, save to $PWD/initrd.img
+build-initrd-registry:
+    just _run /bin/sh /work/for-container.sh build-initrd-registry
+
 # Copy kernel image from bootc image to $PWD/kernel.img
 copy-kernel: 
     just _run /bin/sh /work/for-container.sh copy-kernel
@@ -55,6 +59,7 @@ run-vm initrd="initrd-full.img" cmdline="root=bootc-live:/root.oci" mem="16G":
 
 _volume_flags := \
     f'-v {{modules/"98bootc-live-net"}}:/usr/lib/dracut/modules.d/98bootc-live-net '+\
+    f'-v {{modules/"98bootc-live-registry"}}:/usr/lib/dracut/modules.d/98bootc-live-registry '+\
     f'-v {{modules/"99bootc-live"}}:/usr/lib/dracut/modules.d/99bootc-live '+\
     f'-v {{invocation_directory()}}:/work '
 

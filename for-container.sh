@@ -10,6 +10,9 @@ case $1 in
     build-initrd-net)
     dracut --kver $kver -L 4 -a "bootc-live bootc-live-net" --gzip --force /work/initrd-net.img
     ;;
+    build-initrd-registry)
+    dracut --kver $kver -L 4 -a "bootc-live bootc-live-registry" --gzip --force /work/initrd-registry.img
+    ;;
     copy-kernel)
     cp -f /usr/lib/modules/$kver/vmlinuz /work/kernel.img
     ;;
