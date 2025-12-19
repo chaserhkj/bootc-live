@@ -19,8 +19,8 @@ FROM quay.io/fedora/fedora-bootc:latest
 
 # Replace the embedded initramfs with bootc-live version
 # This is for bootc-live-kexec to work
-RUN --mount=type=bind,from=initramfs-build,target=/mnt \
-    cp -f /mnt/work/initramfs-all-mods.img /usr/lib/modules/*/initramfs.img
+RUN --mount=type=bind,from=initramfs-build,target=/tmp \
+    cp -f /tmp/work/initrd-all-mods.img /usr/lib/modules/*/initramfs.img
 
 # SELinux is disabled by default for all fedora live systems
 # We should disable it here as well to make everything work
