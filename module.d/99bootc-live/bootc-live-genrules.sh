@@ -1,7 +1,5 @@
 #!/bin/sh
 
-warn "bootc-live-genrules with root=$root"
-
 bootclabel=$(getarg bootclabel=)
 [ -z "$bootclabel" ] && bootclabel="latest"
 
