@@ -22,7 +22,7 @@ Not all bootc images are suitable for live boot, some parts would need tweak to 
 - All SELinux labels set on the in-memory file tree before policies are loaded will be lost, resulting in a total break down of any SELinux system. Just disabling it would save a lot of work.
 - Some distribution may carry default system services that assume the system is running on a disk-backed storage. e.g. `bootloader-update.service` in fedora
 
-See [Containerfile.live](Containerfile.live) for an example of live-bootable fedora bootc image.
+See [Containerfile](Containerfile) for an example of live-bootable fedora bootc image.
 
 ### Notes on Fedora CoreOS (FCOS) Images
 
@@ -92,6 +92,38 @@ just run-vm initrd-net.img "root=bootc-live:http://url/to/root.oci"
 
 `kernel.img` and `initrd-net.img` can be used to perform similar boots on a real machine.
 
+### Registry boot
+
+Registry boot enabled by module `bootc-live-registry` further allows specifying an image from a registry to be used as rootfs
+
+This uses [skopeo](https://github.com/containers/skopeo) under the hood and increases the size of initramfs for quite a bit, so be aware if that's a contraint for you.
+
+Similarly use recipe:
+
+```bash
+just build-initrd-registry
+```
+
+Push the live image built previously to some accessible registry, or you can use `docker.io/chaserhkj/fedora-bootc-live` from me
+
+Then we can test registry boot in VM by:
+
+```bash
+just run-vm initrd-registry.img "root=bootc-live:docker://docker.io/chaserhkj/fedora-bootc-live"
+```
+
+`kernel.img` and `initrd-registry.img` can be used to perform similar boots on a real machine.
+
+### Kexec
+
+When using net boot/registry boot, since kernel first loaded for booting and kernel modules in the rootfs can be fetched from different sources, there is a risk of version drift when the rootfs container image is updated but PXE/bootloader is still loading the old kernel and initramfs.
+
+This can be mitigated by using the `bootc-live-kexec` module. With kernel args `bootc.kexec=1` set, the initramfs will attempt to use [kexec](https://en.wikipedia.org/wiki/Kexec) to load the kernel from the rootfs image and handle over execution. All kernel args to the boot kernel will be used for the new kernel except `bootc.kexec`.
+
+This essentially uses the boot kernel and initramfs as a chain loader to load the boot artifacts from the roofs bootc image.
+
+You can do some really fancy tricks with this, e.g. booting to different distro bootc containers from the same set of boot artifacts, just change the boot kernel args.
+
 ## Kernel cmdline reference
 
 Takes rootfs specification of format
@@ -108,4 +140,14 @@ root=bootc-live:supported-protocol://url/to/rootfs.oci
 
 For all supported protocols, see [dracut](https://github.com/dracutdevs/dracut) `url-lib` module.
 
+For registry boot
+
+```bash
+root=bootc-live:docker://your.registry.com/repo/image-name:image-tag
+```
+
+If your registry is served over HTTP (e.g. local registry on LAN or VPN), you can set `bootc.registry.unsecure=1` to use it.
+
 OCI archives need an in-archive label to specific the particular image, this could be specified by `bootclabel=` kernel cmdline. If omitted, default to `latest`.
+
+To enable kexec and boot with kernel/initramfs from the bootc image, set `bootc.kexec=1`
