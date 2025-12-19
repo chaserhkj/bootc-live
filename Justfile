@@ -13,11 +13,11 @@ default: build-full-img copy-kernel
 
 # Build container image for builder tasks
 build-builder-container-img:
-    {{podman}} build -f Containerfile.builder -t {{builder_img}} {{justfile_directory()}}
+    {{podman}} build --target builder -t {{builder_img}} {{justfile_directory()}}
 
 # Build container image for live booting
 build-live-container-img:
-    {{podman}} build -f Containerfile.live -t {{live_img}} {{justfile_directory()}}
+    {{podman}} build -t {{live_img}} {{justfile_directory()}}
 
 # Build initrd with bootc-live dracut module, save to $PWD/initrd.img
 build-initrd: 
