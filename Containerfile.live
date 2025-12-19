@@ -1,0 +1,6 @@
+# This image includes correct configurations to be booted as live system
+FROM quay.io/fedora/fedora-bootc:latest
+
+# SELinux is disabled by default for all fedora live systems
+# We should disable it here as well
+RUN sed -i 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/selinux/config

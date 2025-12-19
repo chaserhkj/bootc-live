@@ -1,5 +1,7 @@
-# Base bootc image for everything
-base := "localhost/coreos-test"
+# Builder image to build initrd and copy kernel image from
+builder_img := "localhost/bootc-test-builder"
+# Live image to export oci archive from
+live_img := "localhost/bootc-test-live"
 podman := require("podman")
 skopeo := require("skopeo")
 cpio := require("cpio")
@@ -9,8 +11,11 @@ modules := justfile_directory() / "module.d"
 
 default: build-full-img copy-kernel
 
-build-test-container:
-    {{podman}} build -f Containerfile -t "localhost/coreos-test" {{justfile_directory()}}
+build-builder-container-img:
+    {{podman}} build -f Containerfile.builder -t {{builder_img}} {{justfile_directory()}}
+
+build-live-container-img:
+    {{podman}} build -f Containerfile.live -t {{live_img}} {{justfile_directory()}}
 
 # Build initrd with bootc-live dracut module, save to $PWD/initrd.img
 build-initrd: 
@@ -22,7 +27,7 @@ copy-kernel:
 
 # Create oci archive for rootfs, $PWD/root.oci
 build-rootfs-oci:
-    cd {{justfile_directory()}} && {{skopeo}} copy containers-storage:{{base}} oci-archive:root.oci:latest
+    cd {{justfile_directory()}} && {{skopeo}} copy containers-storage:{{live_img}} oci-archive:root.oci:latest
 
 # Create $PWD/rootfs.img, which is root.oci wrapped in cpio
 build-rootfs-img: build-rootfs-oci
@@ -47,7 +52,7 @@ _volume_flags := \
     f'-v {{modules/"99bootc-live"}}:/usr/lib/dracut/modules.d/99bootc-live '+\
     f'-v {{invocation_directory()}}:/work '
 
-# Runs command in the base image
+# Runs command in the builder image
 _run +CMDS:
     {{podman}} run --rm -it --entrypoint "" \
-        {{_volume_flags}} {{base}} {{CMDS}}
+        {{_volume_flags}} {{builder_img}} {{CMDS}}
