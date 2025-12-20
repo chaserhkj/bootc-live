@@ -1,7 +1,7 @@
 # Builder image to build initrd and copy kernel image from
-builder_img := "localhost/fedora-bootc-live-builder"
+builder_img := env("BUILDER_IMG", "localhost/fedora-bootc-live-builder")
 # Live image to export oci archive from
-live_img := "localhost/fedora-bootc-live"
+live_img := env("LIVE_IMG", "localhost/fedora-bootc-live")
 podman := require("podman")
 skopeo := require("skopeo")
 cpio := require("cpio")
