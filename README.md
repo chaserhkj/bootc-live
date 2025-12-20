@@ -124,6 +124,12 @@ This essentially uses the boot kernel and initramfs as a chain loader to load th
 
 You can do some really fancy tricks with this, e.g. booting to different distro bootc containers from the same set of boot artifacts, just change the boot kernel args.
 
+### Zram
+
+By default all oci archive extraction and unpacking operations are done in initramfs. This by default has a maximum size of half of the total system memory. For larger rootfs this may pose a problem.
+
+`bootc-live-zram` could partially resolve this by compressing the contents of rootfs in-place in memory. Enable this by adding kernel arg `bootc.zram=<zram disk size>`, e.g. `bootc.zram=8G` to allocate a ram disk with a compressed size of 8GiB.
+
 ## Kernel cmdline reference
 
 Takes rootfs specification of format
@@ -151,3 +157,5 @@ If your registry is served over HTTP (e.g. local registry on LAN or VPN), you ca
 OCI archives need an in-archive label to specific the particular image, this could be specified by `bootclabel=` kernel cmdline. If omitted, default to `latest`.
 
 To enable kexec and boot with kernel/initramfs from the bootc image, set `bootc.kexec=1`
+
+To enable zram compression, set `bootc.zram=<zram disk size>`
