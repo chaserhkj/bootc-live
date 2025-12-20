@@ -31,4 +31,4 @@ RUN systemctl disable bootloader-update.service
 
 # Create a user "liveuser" without password, and configure sudo for it
 RUN useradd -m liveuser && passwd -d liveuser && \
-    echo 'liveuser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/99liveuser.conf
+    echo 'liveuser ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/99_liveuser
