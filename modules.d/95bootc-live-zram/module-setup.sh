@@ -1,6 +1,6 @@
 
 check() {
-    require_binaries zramctl || return 1
+    require_binaries zramctl mkfs.ext4 || return 1
     # This module should always be explicitly included
     return 255
 }
@@ -10,11 +10,11 @@ depends() {
 }
 
 installkernel() {
-    hostonly='' instmods -c zram
+    hostonly='' instmods -c zram ext4
 }
 
 install() {
-    inst_binary zramctl
-    inst_hook cmdline 30 "$moddir/parse-bootc-live-zram.sh"
+    inst_multiple zramctl mkfs.ext4
+    inst_hook pre-udev 00 "$moddir/parse-bootc-live-zram.sh"
     dracut_need_initqueue
 }
