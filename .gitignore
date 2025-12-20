@@ -1,2 +1,3 @@
 *.oci
 *.img
+.envrc
