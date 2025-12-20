@@ -19,10 +19,12 @@ liveurl="${netroot#bootclivenet:}"
 info "fetching $liveurl"
 
 imgfile=
+save_path=/run/initramfs/bootc/root.oci
+mkdir -p "${save_path%/*}"
 #retry until the imgfile is populated with data or the max retries
 i=1
 while [ "$i" -le "$RETRIES" ]; do
-    imgfile=$(fetch_url "$liveurl")
+    imgfile=$(fetch_url "$liveurl" "$save_path")
 
     # shellcheck disable=SC2181
     if [ $? != 0 ]; then

@@ -62,6 +62,7 @@ run-vm initrd="initrd-full.img" cmdline="root=bootc-live:/root.oci" mem="16G":
         -append "console=hvc0 {{cmdline}}"
 
 _volume_flags := \
+    f'-v {{modules/"95bootc-live-zram"}}:/usr/lib/dracut/modules.d/95bootc-live-zram '+\
     f'-v {{modules/"98bootc-live-net"}}:/usr/lib/dracut/modules.d/98bootc-live-net '+\
     f'-v {{modules/"98bootc-live-registry"}}:/usr/lib/dracut/modules.d/98bootc-live-registry '+\
     f'-v {{modules/"99bootc-live"}}:/usr/lib/dracut/modules.d/99bootc-live '+\

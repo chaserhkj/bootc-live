@@ -17,13 +17,13 @@ oci_label=$2
 [ -z $oci_label ] && oci_label=latest
 
 # Extract oci image from archive
-image_dir=/run/initramfs/bootc-img
+image_dir=/run/initramfs/bootc/img
 mkdir -p $image_dir
 info "Unpacking oci image from archive file"
 tar -C $image_dir -xf $imgfile || { warn "failed to unpack oci-archive file $imgfile"; exit 1; }
 
 # Use umoci to extract runtime oci bundle from oci image
-bundle_dir=/run/initramfs/bootc-bundle
+bundle_dir=/run/initramfs/bootc/bundle
 mkdir -p $bundle_dir
 info "Unpacking oci bundle from oci image"
 umoci unpack --image $image_dir:$oci_label $bundle_dir || { warn "failed to unpack oci-img into runtime bundle"; exit 1; }

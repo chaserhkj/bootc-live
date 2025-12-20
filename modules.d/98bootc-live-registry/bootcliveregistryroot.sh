@@ -13,7 +13,8 @@ netroot="$2"
 image_tag="${netroot#bootcliveregistry:}"
 info "fetching oci archive for $image_tag"
 
-img_path=/root.oci
+img_path=/run/initramfs/bootc/root.oci
+mkdir -p "${img_path%/*}"
 oci_archive_tag=latest
 rm -f $img_path
 # Retry loop
