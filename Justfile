@@ -33,7 +33,7 @@ build-initrd-registry:
 
 # Build initrd with all bootc-live modules, save to $PWD/initrd-all-mods.img
 build-initrd-all-mods:
-    just _run /bin/sh /work/for-container.sh build-initrd-registry
+    just _run /bin/sh /work/for-container.sh build-initrd-all-mods
 
 # Copy kernel image from bootc image to $PWD/kernel.img
 copy-kernel: 
