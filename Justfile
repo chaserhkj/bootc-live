@@ -51,6 +51,12 @@ build-rootfs-img: build-rootfs-oci
 build-full-img: build-initrd build-rootfs-img
     cd {{justfile_directory()}} && cat initrd.img rootfs.img > initrd-full.img
 
+# Create UKI with built images
+build-uki variant="full" cmdline="root=bootc-live:/root.oci":
+    [ "{{variant}}" != "none" ] && postfix=-{{variant}} || postfix= ; \
+    /usr/lib/systemd/ukify build --linux=kernel.img --initrd=initrd${postfix}.img \
+    --cmdline="{{cmdline}}" --output=bootc-live${postfix}.efi
+
 run-vm initrd="initrd-full.img" cmdline="root=bootc-live:/root.oci" mem="16G":
     cd {{justfile_directory()}} && {{qemu}} \
         -kernel kernel.img -initrd {{initrd}} -m {{mem}} \
