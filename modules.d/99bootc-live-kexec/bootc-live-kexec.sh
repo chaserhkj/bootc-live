@@ -17,6 +17,10 @@ initramfs_img=$rootfs/usr/lib/modules/$kver/initramfs.img
 [ -s $kernel_img ] || exit 1
 [ -s $initramfs_img ] || exit 1
 
+info "found kernel: $kernel_img"
+info "fount initramfs: $initramfs_img"
+warn "found kernel from mounted rootfs, commencing kexec"
+
 kexec -l $kernel_img --initrd=$initramfs_img --command-line="$kargs" || exit 1
 kexec -e
 
