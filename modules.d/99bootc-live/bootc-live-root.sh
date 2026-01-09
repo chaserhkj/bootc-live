@@ -2,8 +2,11 @@
 # Unpacks and mounts a rootfs from an oci archive
 
 type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
+. /lib/bootc-live-lib.sh
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+check_bootc_quiet
 
 # Currently this only takes oci archive file from
 # 1. script caller (downloaded then called from bootc-live-net)
@@ -30,13 +33,13 @@ mkdir -p $workspace
 image_dir=$workspace/img
 mkdir -p $image_dir
 warn "Unpacking oci image from archive file"
-tar -C $image_dir -xf $imgfile || { die "failed to unpack oci-archive file $imgfile"; }
+$bootc_long_running_process tar -C $image_dir -xvf $imgfile || { die "failed to unpack oci-archive file $imgfile"; }
 
 # Use umoci to extract runtime oci bundle from oci image
 bundle_dir=$workspace/bundle
 mkdir -p $bundle_dir
 warn "Unpacking oci bundle from oci image"
-umoci unpack --image $image_dir:$oci_label $bundle_dir || { die "failed to unpack oci-img into runtime bundle"; }
+$bootc_long_running_process umoci --verbose unpack --image $image_dir:$oci_label $bundle_dir || { die "failed to unpack oci-img into runtime bundle"; }
 
 # Prepare rootfs for mounting
 rootfs_dir=/run/bootc-live

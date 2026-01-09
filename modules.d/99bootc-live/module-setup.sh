@@ -11,6 +11,7 @@ depends() {
 
 install() {
     inst_multiple tar umoci
+    inst_simple "$moddir/bootc-live-lib.sh" "/lib/bootc-live-lib.sh"
     inst_script "$moddir/bootc-live-root.sh" "/sbin/bootc-live-root"
     inst_hook cmdline 30 "$moddir/parse-bootc-live.sh"
     inst_hook pre-udev 30 "$moddir/bootc-live-genrules.sh"

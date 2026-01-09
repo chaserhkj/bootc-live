@@ -2,8 +2,12 @@
 # bootclivenetroot - fetch a bootc oci archive from network and run it as live system
 
 type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
+. /lib/bootc-live-lib.sh
 
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+check_bootc_quiet
+
 RETRIES=${RETRIES:-100}
 SLEEP=${SLEEP:-5}
 
@@ -21,9 +25,9 @@ rm -f $img_path
 i=1
 while [ "$i" -le "$RETRIES" ]; do
     if getargbool 0 bootc.registry.unsecure; then
-        skopeo --insecure-policy copy --src-tls-verify=false docker://"$image_tag" oci-archive:$img_path:$oci_archive_tag
+        $bootc_long_running_process skopeo --insecure-policy copy --src-tls-verify=false docker://"$image_tag" oci-archive:$img_path:$oci_archive_tag
     else
-        skopeo --insecure-policy copy docker://"$image_tag" oci-archive:$img_path:$oci_archive_tag
+        $bootc_long_running_process skopeo --insecure-policy copy docker://"$image_tag" oci-archive:$img_path:$oci_archive_tag
     fi
 
     # shellcheck disable=SC2181
