@@ -1,3 +1,4 @@
 *.oci
 *.img
+*.efi
 .envrc
