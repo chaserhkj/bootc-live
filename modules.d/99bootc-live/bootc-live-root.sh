@@ -21,13 +21,6 @@ oci_label=$2
 
 workspace=/run/initramfs/bootc
 mkdir -p $workspace
-# workspace must be mounted with suid,dev options for rootfs to work with sudo, overlayfs, etc.
-# but /run in initramfs is often mounted as tmpfs with nosuid,nodev
-# other modules may mount to this location as well (e.g. bootc-live-zram)
-# apply simple assumption and just test if /run and workspace are on same device
-# mount new tmpfs with proper options if they are, noop otherwise
-[ "$(stat -c '%d' -f /run )" = "$(stat -c '%d' -f $workspace)" ] && mount -t tmpfs -o suid,dev none $workspace
-
 
 # Extract oci image from archive
 image_dir=$workspace/img
@@ -38,6 +31,14 @@ $bootc_long_running_process tar -C $image_dir -xvf $imgfile || { die "failed to 
 # Use umoci to extract runtime oci bundle from oci image
 bundle_dir=$workspace/bundle
 mkdir -p $bundle_dir
+
+# rootfs unpack location must be mounted with suid,dev options for rootfs to work with sudo, overlayfs, etc.
+# but /run in initramfs is often mounted as tmpfs with nosuid,nodev
+# other modules may mount to workspace location as well (e.g. bootc-live-zram)
+# apply simple assumption and just test if /run and bundle_dir are on same device
+# mount new tmpfs with proper options if they are, noop otherwise
+[ "$(stat -c '%d' -f /run )" = "$(stat -c '%d' -f $bundle_dir)" ] && mount -t tmpfs -o suid,dev none $bundle_dir
+
 warn "Unpacking oci bundle from oci image"
 $bootc_long_running_process umoci --verbose unpack --image $image_dir:$oci_label $bundle_dir || { die "failed to unpack oci-img into runtime bundle"; }
 
