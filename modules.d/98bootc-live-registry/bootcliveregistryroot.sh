@@ -17,8 +17,7 @@ netroot="$2"
 image_tag="${netroot#bootcliveregistry:}"
 warn "fetching oci archive for $image_tag"
 
-# /run/initramfs/bootc might be over-mounted, we store in /run/initramfs
-img_path=/run/initramfs/bootc-root.oci
+img_path=/run/initramfs/bootc/root.oci
 mkdir -p "${img_path%/*}"
 oci_archive_tag=latest
 rm -f $img_path
