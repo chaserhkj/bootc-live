@@ -19,7 +19,8 @@ liveurl="${netroot#bootclivenet:}"
 warn "fetching $liveurl"
 
 imgfile=
-save_path=/run/initramfs/bootc/root.oci
+# /run/initramfs/bootc might be over-mounted, we store in /run/initramfs
+save_path=/run/initramfs/bootc-root.oci
 mkdir -p "${save_path%/*}"
 #retry until the imgfile is populated with data or the max retries
 i=1
