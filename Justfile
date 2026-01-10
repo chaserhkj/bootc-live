@@ -57,12 +57,13 @@ build-uki variant="full" cmdline="root=bootc-live:/root.oci":
     /usr/lib/systemd/ukify build --linux=kernel.img --initrd=initrd${postfix}.img \
     --cmdline="{{cmdline}}" --output=bootc-live${postfix}.efi
 
-run-vm initrd="initrd-full.img" cmdline="root=bootc-live:/root.oci" mem="16G":
+run-vm initrd="initrd-full.img" cmdline="root=bootc-live:/root.oci" mem="16G" cores="4":
     cd {{justfile_directory()}} && {{qemu}} \
         -kernel kernel.img -initrd {{initrd}} -m {{mem}} \
-        -accel kvm -cpu host \
+        -accel kvm -cpu host -smp {{cores}} \
         -device virtio-serial-pci,id=virtio-serial0 \
         -chardev stdio,id=charconsole0 \
+        -overcommit mem-lock=on-fault \
         -device virtconsole,chardev=charconsole0,id=console0 \
         -display none \
         -append "console=hvc0 {{cmdline}}"
