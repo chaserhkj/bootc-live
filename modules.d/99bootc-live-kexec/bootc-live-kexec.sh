@@ -18,10 +18,34 @@ initramfs_img=$rootfs/usr/lib/modules/$kver/initramfs.img
 [ -s $kernel_img ] || exit 1
 [ -s $initramfs_img ] || exit 1
 
-info "found kernel: $kernel_img"
-info "found initramfs: $initramfs_img"
-info "use kernel cmdline: $kargs"
-warn "found kernel from mounted rootfs, commencing kexec"
+warn "found kernel: $kernel_img"
+warn "found initramfs: $initramfs_img"
+# Trying to reuse the oci image
+reuse_oci_image() {
+    local workspace="/run/initramfs/bootc"
+    imgfile=$(readlink -e $workspace/extracted-rootfs.oci)
+    [[ -s $imgfile ]] || return
+    warn "attempting to reuse existing imgfile $imgfile"
+    (
+        set -e
+        mkdir -p $workspace/repack-rootfs
+        cd $workspace/repack-rootfs
+        cp $imgfile root.oci
+        echo root.oci | cpio -o --format=newc > $workspace/repacked-rootfs.img
+        rm -rf $workspace/repack-rootfs
+    ) || return
+    kargs+=" bootc.kexec.reuse-image=0 root=bootc-live:/root.oci"
+    cat $workspace/repacked-rootfs.img $initramfs_img > $workspace/repacked-initrd.img
+    rm -f $workspace/repacked-rootfs.img
+    initramfs_img=$workspace/repacked-initrd.img
+}
+
+if getargbool 1 bootc.kexec.reuse-image; then
+    reuse_oci_image
+fi
+
+warn "use kernel cmdline: $kargs"
+warn "commencing kexec"
 
 kexec -l $kernel_img --initrd=$initramfs_img --command-line="$kargs" || exit 1
 kexec -e

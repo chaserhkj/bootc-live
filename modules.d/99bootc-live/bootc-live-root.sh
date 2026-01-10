@@ -22,6 +22,9 @@ oci_label=$2
 workspace=/run/initramfs/bootc
 mkdir -p $workspace
 
+# Reference where the oci image is, for kexec processing
+ln -sfT $imgfile $workspace/extracted-rootfs.oci
+
 # Extract oci image from archive
 image_dir=$workspace/img
 mkdir -p $image_dir
@@ -55,7 +58,9 @@ mount --bind $bundle_dir/rootfs/etc $rootfs_dir/etc
 
 # Clean up to free memory
 rm -rf $image_dir
-rm -f $imgfile
+if ! getargbool 1 bootc.kexec.reuse-image; then
+    rm -f $imgfile
+fi
 
 if [ -z "$DRACUT_SYSTEMD" ]; then
     printf 'mount -o rbind,slave,shared %s %s\n' "$rootfs_dir" "$NEWROOT" > "$hookdir"/mount/01-$$-bootc-live.sh
