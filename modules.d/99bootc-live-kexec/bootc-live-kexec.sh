@@ -18,14 +18,14 @@ initramfs_img=$rootfs/usr/lib/modules/$kver/initramfs.img
 [ -s $kernel_img ] || exit 1
 [ -s $initramfs_img ] || exit 1
 
-warn "found kernel: $kernel_img"
-warn "found initramfs: $initramfs_img"
+warn "bootc-live-kexec: found kernel: $kernel_img"
+warn "bootc-live-kexec: found initramfs: $initramfs_img"
 # Trying to reuse the oci image
 reuse_oci_image() {
     local workspace="/run/initramfs/bootc"
     imgfile=$(readlink -e $workspace/extracted-rootfs.oci)
     [[ -s $imgfile ]] || return
-    warn "attempting to reuse existing imgfile $imgfile"
+    warn "bootc-live-kexec: attempting to reuse existing imgfile $imgfile"
     (
         set -e
         mkdir -p $workspace/repack-rootfs
@@ -44,8 +44,8 @@ if getargbool 1 bootc.kexec.reuse-image; then
     reuse_oci_image
 fi
 
-warn "use kernel cmdline: $kargs"
-warn "commencing kexec"
+warn "bootc-live-kexec: use kernel cmdline: $kargs"
+warn "bootc-live-kexec: commencing kexec"
 
 kexec -l $kernel_img --initrd=$initramfs_img --command-line="$kargs" || exit 1
 kexec -e

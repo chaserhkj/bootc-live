@@ -16,7 +16,7 @@ bootclabel=$(getarg bootclabel=)
 
 netroot="$2"
 liveurl="${netroot#bootclivenet:}"
-warn "fetching $liveurl"
+warn "bootc-live-net: fetching $liveurl"
 
 imgfile=
 save_path=/run/initramfs/bootc/root.oci

@@ -28,7 +28,7 @@ ln -sfT $imgfile $workspace/extracted-rootfs.oci
 # Extract oci image from archive
 image_dir=$workspace/img
 mkdir -p $image_dir
-warn "Unpacking oci image from archive file"
+warn "bootc-live: Unpacking oci image from archive file"
 $bootc_long_running_process tar -C $image_dir -xvf $imgfile || { die "failed to unpack oci-archive file $imgfile"; }
 
 # Use umoci to extract runtime oci bundle from oci image
@@ -42,7 +42,7 @@ mkdir -p $bundle_dir
 # mount new tmpfs with proper options if they are, noop otherwise
 [ "$(stat -c '%d' -f /run )" = "$(stat -c '%d' -f $bundle_dir)" ] && mount -t tmpfs -o suid,dev none $bundle_dir
 
-warn "Unpacking oci bundle from oci image"
+warn "bootc-live: Unpacking oci bundle from oci image"
 $bootc_long_running_process umoci --verbose unpack --image $image_dir:$oci_label $bundle_dir || { die "failed to unpack oci-img into runtime bundle"; }
 
 # Prepare rootfs for mounting
