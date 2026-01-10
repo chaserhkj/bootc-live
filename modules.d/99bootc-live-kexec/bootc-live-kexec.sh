@@ -1,6 +1,7 @@
 #!/bin/bash
 # bootc-live-kexec - Finds vmlinuz and initramfs.img in mounted bootc image and kexec into them
 
+type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
 kargs="$1"
 
 # Should be mounted by bootc-live
