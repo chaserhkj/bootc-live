@@ -24,7 +24,7 @@ warn "bootc-live-kexec: found initramfs: $initramfs_img"
 reuse_oci_image() {
     local workspace="/run/initramfs/bootc"
     imgfile=$(readlink -e $workspace/extracted-rootfs.oci)
-    [[ -s $imgfile ]] || return
+    [[ -s $imgfile ]] || { warn "bootc-live-kexec: no reusable image found"; return; }
     warn "bootc-live-kexec: attempting to reuse existing imgfile $imgfile"
     (
         set -e
@@ -33,10 +33,14 @@ reuse_oci_image() {
         cp $imgfile root.oci
         echo root.oci | cpio -o --format=newc > $workspace/repacked-rootfs.img
         rm -rf $workspace/repack-rootfs
-    ) || return
+        cat $workspace/repacked-rootfs.img $initramfs_img > $workspace/repacked-initrd.img
+        rm -f $workspace/repacked-rootfs.img
+    )
+    if [ $? -ne 0 ]; then
+        warn "bootc-live-kexec: failed to setup image reuse"
+        return
+    fi
     kargs+=" bootc.kexec.reuse-image=0 root=bootc-live:/root.oci"
-    cat $workspace/repacked-rootfs.img $initramfs_img > $workspace/repacked-initrd.img
-    rm -f $workspace/repacked-rootfs.img
     initramfs_img=$workspace/repacked-initrd.img
 }
 
