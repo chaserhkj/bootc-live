@@ -158,4 +158,6 @@ OCI archives need an in-archive label to specific the particular image, this cou
 
 To enable kexec and boot with kernel/initramfs from the bootc image, set `bootc.kexec=1`
 
+When kexec is enabled, bootc-live will attempt to reuse the downloaded OCI image by repacking it into the next stage initramfs, so that next stage will not need to download the image again. However this will induce more memory usage. Set `bootc.kexec.reuse-image=0`
+
 To enable zram compression, set `bootc.zram=<zram disk size>`
