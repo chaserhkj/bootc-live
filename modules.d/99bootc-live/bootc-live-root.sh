@@ -49,12 +49,27 @@ $bootc_long_running_process umoci --verbose unpack --image $image_dir:$oci_label
 rootfs_dir=/run/bootc-live
 mkdir -p $rootfs_dir
 
-# Mount rootfs read-only
-mount --bind -o ro,shared $bundle_dir/rootfs $rootfs_dir
+# Resolve rootfs mount flags
+if getargbool 0 rw; then
+    getargbool 0 ro && warn "bootc-live: both ro and rw set, assuming rw"
+    mount_flags=rw
+else
+    mount_flags=ro
+fi
+rootflags=$(getarg rootflags=)
+[ -n $rootflags ] && mount_flags="$mount_flags,$rootflags"
 
-# Mount var and etc read-write
-mount --bind $bundle_dir/rootfs/var $rootfs_dir/var
-mount --bind $bundle_dir/rootfs/etc $rootfs_dir/etc
+# Mount rootfs
+mount --bind --make-shared -o $mount_flags $bundle_dir/rootfs $rootfs_dir
+
+# Unless explicitly set mount flags, mount var and etc read-write by default
+var_flags=$(getarg bootc.live.var.flags=)
+[ -z $var_flags ] && var_flags=rw
+etc_flags=$(getarg bootc.live.etc.flags=)
+[ -z $etc_flags ] && etc_flags=rw
+
+mount --bind -o $var_flags $bundle_dir/rootfs/var $rootfs_dir/var
+mount --bind -o $etc_flags $bundle_dir/rootfs/etc $rootfs_dir/etc
 
 # Clean up to free memory
 rm -rf $image_dir

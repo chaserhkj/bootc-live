@@ -161,3 +161,7 @@ To enable kexec and boot with kernel/initramfs from the bootc image, set `bootc.
 When kexec is enabled, bootc-live will attempt to reuse the downloaded OCI image by repacking it into the next stage initramfs, so that next stage will not need to download the image again. However this will induce more memory usage. Set `bootc.kexec.reuse-image=0`
 
 To enable zram compression, set `bootc.zram=<zram disk size>`
+
+By default, the rootfs will be mounted as readonly. Set `rw` on kernel cmdline to override. Note that `ro` on kernel cmdline is always ignored, to override a previously set `rw` flag, append `rw=0` to kernel cmdline instead.
+
+`bootc.live.var.flags` and `boot.live.etc.flags` control the bind mount flags for /var and /etc, respectively. Their default values are both just `rw`.
