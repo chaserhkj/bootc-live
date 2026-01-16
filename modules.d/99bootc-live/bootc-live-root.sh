@@ -62,12 +62,12 @@ if getargbool 0 bootc.live.erofs; then
 
     mount -t erofs $loop_dev -o "$rootflags" $rootfs_dir
 
-    if getargbool bootc.live.var.rw 1; then
+    if getargbool 1 bootc.live.var.rw; then
         cp -a $rootfs_dir/var $bundle_dir/var
         mount --bind -o rw $bundle_dir/var $rootfs_dir/var
     fi
 
-    if getargbool bootc.live.etc.rw 1; then
+    if getargbool 1 bootc.live.etc.rw; then
         cp -a $rootfs_dir/etc $bundle_dir/etc
         mount --bind -o rw $bundle_dir/etc $rootfs_dir/etc
     fi
