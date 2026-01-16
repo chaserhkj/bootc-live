@@ -152,16 +152,24 @@ For registry boot
 root=bootc-live:docker://your.registry.com/repo/image-name:image-tag
 ```
 
-If your registry is served over HTTP (e.g. local registry on LAN or VPN), you can set `bootc.registry.unsecure=1` to use it.
+If your registry is served over HTTP (e.g. local registry on LAN or VPN), you can set `bootc.registry.unsecure(=1)` to use it.
 
 OCI archives need an in-archive label to specific the particular image, this could be specified by `bootclabel=` kernel cmdline. If omitted, default to `latest`.
 
-To enable kexec and boot with kernel/initramfs from the bootc image, set `bootc.kexec=1`
+To enable kexec and boot with kernel/initramfs from the bootc image, set `bootc.kexec(=1)`
 
 When kexec is enabled, bootc-live will attempt to reuse the downloaded OCI image by repacking it into the next stage initramfs, so that next stage will not need to download the image again. However this will induce more memory usage. Set `bootc.kexec.reuse-image=0`
 
 To enable zram compression, set `bootc.zram=<zram disk size>`
 
-By default, the rootfs will be mounted as readonly. Set `rw` on kernel cmdline to override. Note that `ro` on kernel cmdline is always ignored, to override a previously set `rw` flag, append `rw=0` to kernel cmdline instead.
+When mounting the pulled image in initramfs, bootc-live has two modes of operation:
 
-`bootc.live.var.flags` and `boot.live.etc.flags` control the bind mount flags for /var and /etc, respectively. Their default values are both just `rw`.
+1. Bind mount mode: rootfs will be bind-mounted to be the new root, this is the default
+2. EROFS mode: rootfs will be made into an EROFS image and mounted to be the new root, the EROFS image will be set to have a fixed null UUID and all timestamps are set to Unix epoch. This has the benefit of reproducibility and would make any consistent state verification from the booted image much easier. set karg `bootc.live.erofs(=1)` to enable
+
+By default, the rootfs will be mounted as readonly. Set `rw` on kernel cmdline to override. Note that:
+
+1. `ro` on kernel cmdline is always ignored, to override a previously set `rw` flag, append `rw=0` to kernel cmdline instead.
+2. This will have no effect with EROFS mode since all EROFS images are read only.
+
+By default, `/var` and `/etc` will be mounted read-write (under EROFS they are copied to make that happen), set `bootc.live.var.rw=0` or `bootc.live.etc.rw=0` to disable

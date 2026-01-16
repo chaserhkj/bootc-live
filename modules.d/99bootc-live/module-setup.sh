@@ -1,6 +1,6 @@
 
 check() {
-    require_binaries tar umoci || return 1
+    require_binaries tar umoci tee mkfs.erofs losetup || return 1
     # This module should always be explicitly included
     return 255
 }
@@ -9,8 +9,12 @@ depends() {
     echo "bash"
 }
 
+installkernel() {
+    hostonly='' instmods -c erofs loop
+}
+
 install() {
-    inst_multiple tar umoci tee
+    inst_multiple tar umoci tee mkfs.erofs losetup
     inst_simple "$moddir/bootc-live-lib.sh" "/lib/bootc-live-lib.sh"
     inst_script "$moddir/bootc-live-root.sh" "/sbin/bootc-live-root"
     inst_hook cmdline 30 "$moddir/parse-bootc-live.sh"

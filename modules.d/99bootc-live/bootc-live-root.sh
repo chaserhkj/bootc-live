@@ -49,27 +49,52 @@ $bootc_long_running_process umoci --verbose unpack --image $image_dir:$oci_label
 rootfs_dir=/run/bootc-live
 mkdir -p $rootfs_dir
 
-# Resolve rootfs mount flags
-if getargbool 0 rw; then
-    getargbool 0 ro && warn "bootc-live: both ro and rw set, assuming rw"
-    mount_flags=rw
-else
-    mount_flags=ro
-fi
-rootflags=$(getarg rootflags=)
-[ -n $rootflags ] && mount_flags="$mount_flags,$rootflags"
-
-# Mount rootfs
-mount --bind --make-shared -o $mount_flags $bundle_dir/rootfs $rootfs_dir
-
 # Unless explicitly set mount flags, mount var and etc read-write by default
-var_flags=$(getarg bootc.live.var.flags=)
-[ -z $var_flags ] && var_flags=rw
-etc_flags=$(getarg bootc.live.etc.flags=)
-[ -z $etc_flags ] && etc_flags=rw
+rootflags=$(getarg rootflags=)
 
-mount --bind -o $var_flags $bundle_dir/rootfs/var $rootfs_dir/var
-mount --bind -o $etc_flags $bundle_dir/rootfs/etc $rootfs_dir/etc
+if getargbool 0 bootc.live.erofs; then
+
+    warn "bootc-live: making erofs image"
+
+    mkfs.erofs -U 00000000-0000-0000-0000-000000000000 -T 0 $workspace/erofs.img $bundle_dir/rootfs/
+
+    loop_dev=$(losetup --find --show --direct-io=on $workspace/erofs.img)
+
+    mount -t erofs $loop_dev -o "$rootflags" $rootfs_dir
+
+    if getargbool bootc.live.var.rw 1; then
+        cp -a $rootfs_dir/var $bundle_dir/var
+        mount --bind -o rw $bundle_dir/var $rootfs_dir/var
+    fi
+
+    if getargbool bootc.live.etc.rw 1; then
+        cp -a $rootfs_dir/etc $bundle_dir/etc
+        mount --bind -o rw $bundle_dir/etc $rootfs_dir/etc
+    fi
+
+    # Clean up extracted bundle to save space
+    rm -rf $bundle_dir/rootfs
+else
+    # Resolve rootfs mount flags
+    if getargbool 0 rw; then
+        getargbool 0 ro && warn "bootc-live: both ro and rw set, assuming rw"
+        mount_flags=rw
+    else
+        mount_flags=ro
+    fi
+    [ -n $rootflags ] && mount_flags="$mount_flags,$rootflags"
+
+    # Mount rootfs
+    mount --bind --make-shared -o $mount_flags $bundle_dir/rootfs $rootfs_dir
+
+    if getargbool bootc.live.var.rw 1; then
+        mount --bind -o rw $bundle_dir/rootfs/var $rootfs_dir/var
+    fi
+    if getargbool bootc.live.etc.rw 1; then
+        mount --bind -o rw $bundle_dir/rootfs/etc $rootfs_dir/etc
+    fi
+fi
+
 
 # Clean up to free memory
 rm -rf $image_dir
